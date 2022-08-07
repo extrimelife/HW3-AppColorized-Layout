@@ -49,28 +49,16 @@ class ViewController: UIViewController {
         return stackView
     }()
     
-    private let redDinamicLabel: UILabel = {
-        let dinamicRedLabel = UILabel()
-        dinamicRedLabel.translatesAutoresizingMaskIntoConstraints = false
-        dinamicRedLabel.text = "0.0"
-        dinamicRedLabel.textColor = .white
-        return dinamicRedLabel
+    private lazy var redDinamicLabel: UILabel = {
+        getDinamicLabel()
     }()
     
-    private let greenDinamicLabel: UILabel = {
-        let dinamicGreenLabel = UILabel()
-        dinamicGreenLabel.translatesAutoresizingMaskIntoConstraints = false
-        dinamicGreenLabel.text = "0.0"
-        dinamicGreenLabel.textColor = .white
-        return dinamicGreenLabel
+    private lazy var greenDinamicLabel: UILabel = {
+        getDinamicLabel()
     }()
     
-    private let blueDinamicLabel: UILabel = {
-        let dinamicBlueLabel = UILabel()
-        dinamicBlueLabel.translatesAutoresizingMaskIntoConstraints = false
-        dinamicBlueLabel.text = "0.0"
-        dinamicBlueLabel.textColor = .white
-        return dinamicBlueLabel
+    private lazy var blueDinamicLabel: UILabel = {
+        getDinamicLabel()
     }()
     
     private let stackForDinamicLabel: UIStackView = {
@@ -83,34 +71,19 @@ class ViewController: UIViewController {
     }()
     
     private lazy var redSlider: UISlider = {
-        let redSlider = UISlider()
-        redSlider.translatesAutoresizingMaskIntoConstraints = false
-        redSlider.value = 0
-        redSlider.minimumValue = 0
-        redSlider.maximumValue = 1
-        redSlider.minimumTrackTintColor = .red
+        let redSlider = getSlider(colour: .red)
         redSlider.addTarget(self, action: #selector(redSliderAction), for: .valueChanged)
         return redSlider
     }()
     
     private lazy var greenSlider: UISlider = {
-        let greenSlider = UISlider()
-        greenSlider.translatesAutoresizingMaskIntoConstraints = false
-        greenSlider.value = 0
-        greenSlider.minimumValue = 0
-        greenSlider.maximumValue = 1
-        greenSlider.minimumTrackTintColor = .green
+        let greenSlider = getSlider(colour: .green)
         greenSlider.addTarget(self, action: #selector(greenSliderAction), for: .valueChanged)
         return greenSlider
     }()
     
     private lazy var blueSlider: UISlider = {
-        let blueSlider = UISlider()
-        blueSlider.translatesAutoresizingMaskIntoConstraints = false
-        blueSlider.value = 0
-        blueSlider.minimumValue = 0
-        blueSlider.maximumValue = 1
-        blueSlider.minimumTrackTintColor = .blue
+        let blueSlider = getSlider(colour: .blue)
         blueSlider.addTarget(self, action: #selector(blueSliderAction), for: .valueChanged)
         return blueSlider
     }()
@@ -119,21 +92,42 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         setupLayout()
+        setupColour()
     }
     
     @objc private func redSliderAction() {
+        setupColour()
         redDinamicLabel.text = String(round(redSlider.value * 100) / 100)
-        greenDinamicLabel.text = String(round(greenSlider.value * 100) / 100)
-        blueDinamicLabel.text = String(round(blueSlider.value * 100) / 100)
-        colorView.backgroundColor = UIColor(red: CGFloat(redSlider.value), green: CGFloat(greenSlider.value), blue: CGFloat(blueSlider.value), alpha: 1)
     }
     
     @objc private func greenSliderAction() {
-        redSliderAction()
+       setupColour()
+        greenDinamicLabel.text = String(round(greenSlider.value * 100) / 100)
     }
     
     @objc private func blueSliderAction() {
-        redSliderAction()
+        setupColour()
+        blueDinamicLabel.text = String(round(blueSlider.value * 100) / 100)
+    }
+    
+    //MARK: - Настраиваю динамический UILabel, чтобы не дублировать код при создании одинаковых UILabel
+    private func getDinamicLabel() -> UILabel {
+        let dinamicGreenLabel = UILabel()
+        dinamicGreenLabel.translatesAutoresizingMaskIntoConstraints = false
+        dinamicGreenLabel.text = "0.0"
+        dinamicGreenLabel.textColor = .white
+        return dinamicGreenLabel
+    }
+    
+    //MARK: - Настраиваю UISlider чтобы дублировать код при создании одинаковых UISlider
+    private func getSlider(colour: UIColor) -> UISlider {
+        let redSlider = UISlider()
+        redSlider.translatesAutoresizingMaskIntoConstraints = false
+        redSlider.value = 0
+        redSlider.minimumValue = 0
+        redSlider.maximumValue = 1
+        redSlider.minimumTrackTintColor = colour
+        return redSlider
     }
     
     private func setupLayout() {
@@ -167,6 +161,15 @@ class ViewController: UIViewController {
             blueSlider.leadingAnchor.constraint(equalTo: stackForDinamicLabel.trailingAnchor, constant: 30),
             blueSlider.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -20),
         ])
+    }
+}
+
+//MARK: - Расширение для смены цвета при движении UISlider
+extension ViewController {
+    func setupColour() {
+        colorView.backgroundColor = UIColor(red: CGFloat(redSlider.value),
+                                        green: CGFloat(greenSlider.value),
+                                blue: CGFloat(blueSlider.value), alpha: 1)
     }
 }
 
